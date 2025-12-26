@@ -4,44 +4,41 @@ import com.amit.alumniManagement.entity.StudentProfile;
 import com.amit.alumniManagement.entity.User;
 import com.amit.alumniManagement.repository.StudentProfileRepository;
 import com.amit.alumniManagement.repository.UserRepository;
+import com.amit.alumniManagement.service.StudentProfileService;
+import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin(origins = "*")
+@AllArgsConstructor
 @RestController
 @RequestMapping("/api/student/profile")
 public class StudentProfileController {
 
-    private final StudentProfileRepository repo;
-    private final UserRepository userRepo;
-
-    public StudentProfileController(StudentProfileRepository repo,
-                                    UserRepository userRepo) {
-        this.repo = repo;
-        this.userRepo = userRepo;
-    }
+    private final StudentProfileService studentProfileService;
 
     @GetMapping("/{userId}")
-    public StudentProfile getProfile(@PathVariable Long userId) {
-        return repo.findByUserId(userId).orElse(null);
+    public ResponseEntity<?> getProfile(@PathVariable Long userId) {
+        try{
+            return new ResponseEntity<>(studentProfileService.getStudentProfileById(userId),
+                    HttpStatus.OK);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Profile Not Found : " + e.getMessage());
+        }
     }
 
     @PostMapping("/{userId}")
-    public StudentProfile saveProfile(
+    public ResponseEntity<?> saveProfile(
             @PathVariable Long userId,
             @RequestBody StudentProfile profile) {
 
-        User user = userRepo.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        try{
+            return new ResponseEntity<>(studentProfileService.saveOrUpdateProfile(userId, profile),
+                    HttpStatus.OK);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Failed to save profile : " + e.getMessage());
+        }
 
-        return repo.findByUserId(userId)
-                .map(existing -> {
-                    existing.setDepartment(profile.getDepartment());
-                    existing.setYear(profile.getYear());
-                    existing.setSkills(profile.getSkills());
-                    return repo.save(existing);
-                })
-                .orElseGet(() -> {
-                    profile.setUser(user);
-                    return repo.save(profile);
-                });
     }
 }

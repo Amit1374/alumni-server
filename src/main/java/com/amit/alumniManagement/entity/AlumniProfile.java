@@ -7,23 +7,24 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "student_profile")
+@Table(name = "alumni_profile")
 @Data
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class StudentProfile {
+@Builder
+public class AlumniProfile {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private String department;
-    private Integer year;
-    private String skills;
+    private Integer passOutYear;
+    private Integer experienceInYear;
+    private String expertise;
+    private String companyName;
+    private String designation;
+    private String industry;
 
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
-
 }
