@@ -1,6 +1,7 @@
 package com.amit.alumniManagement.repository;
 
 import com.amit.alumniManagement.entity.AlumniProfile;
+import com.amit.alumniManagement.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -8,20 +9,29 @@ import java.util.Optional;
 
 public interface AlumniProfileRepository extends JpaRepository<AlumniProfile, Long> {
 
-    // We add here ignore case while searching/ find
+    // Search by company
+    List<AlumniProfile> findByCompanyNameIgnoreCase(String companyName);
 
-    List<AlumniProfile> findByCompanyName(String companyName);
+    // Search by expertise
+    List<AlumniProfile> findByExpertiseIgnoreCase(String expertise);
 
-    List<AlumniProfile> findByExpertise(String skill);
-
+    // Search by pass out year
     List<AlumniProfile> findByPassOutYear(Integer year);
 
-    List<AlumniProfile> findByIndustry(String industry);
+    // Search by industry
+    List<AlumniProfile> findByIndustryIgnoreCase(String industry);
 
-    // "User_Name" tells Spring: "Go to User object, then check Name field"
-    List<AlumniProfile> findByUserName(String name);
+    // Search by alumni name (User -> name)
+    List<AlumniProfile> findByUser_NameIgnoreCase(String name);
 
+    // Fetch profile by user id (MOST IMPORTANT)
     Optional<AlumniProfile> findByUserId(Long userId);
 
-    List<AlumniProfile> findByCompanyNameAndDesignation(String companyName,  String designation);
+    // Combined search
+    List<AlumniProfile> findByCompanyNameIgnoreCaseAndDesignationIgnoreCase(
+            String companyName,
+            String designation
+    );
+
+    Optional<Object> findByUser(User user);
 }

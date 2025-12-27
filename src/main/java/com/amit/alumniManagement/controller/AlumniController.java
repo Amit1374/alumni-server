@@ -32,6 +32,14 @@ public class AlumniController {
         }
     }
 
+    @GetMapping("/{userId}")
+    public ResponseEntity<?> getAlumniProfile(@PathVariable Long userId) {
+        return alumniProfileRepository.findByUserId(userId)
+                .map(profile -> ResponseEntity.ok(profile))
+                .orElse(ResponseEntity.ok().build()); // return empty if not found
+    }
+
+
     @PostMapping("/{userId}")
     public ResponseEntity<?> saveOrUpdateAlumniProfile(
             @PathVariable Long userId,
