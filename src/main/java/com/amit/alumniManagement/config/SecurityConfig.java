@@ -20,17 +20,17 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
-                .cors(cors -> {}) // ✅ ENABLE CORS
+                .cors(cors -> {}) //  ENABLE CORS
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
 
-                        // ✅ Explicitly allow student profile APIs
+                        //  Explicitly allow student profile APIs
                         .requestMatchers(HttpMethod.POST, "/api/student/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/student/**").permitAll()
                         .requestMatchers("/api/alumni/**").permitAll()
 
-
+                        .requestMatchers("/api/notifications/**").permitAll()
                         .requestMatchers("/api/test/student").hasRole("STUDENT")
                         .requestMatchers("/api/test/alumni").hasRole("ALUMNI")
                         .requestMatchers("/api/test/admin").hasRole("ADMIN")

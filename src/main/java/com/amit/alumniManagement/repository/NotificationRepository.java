@@ -16,4 +16,6 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     // "IsReadFalse" -> Checks if boolean isRead == false
     List<Notification> findByUserIdAndIsReadFalse(Long userId);
 
+    List<Notification> findByUserId(Long userId);
+
 }
