@@ -1,6 +1,7 @@
 package com.amit.alumniManagement.repository;
 
 import com.amit.alumniManagement.entity.Event;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDateTime;
@@ -14,4 +15,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     // Find events sorted by date (Earliest first)
     List<Event> findAllByOrderByEventDateTimeAsc();
+
+    @Transactional
+    void deleteByEventDateTimeBefore(LocalDateTime now);
 }
