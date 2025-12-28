@@ -29,6 +29,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/student/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/student/**").permitAll()
                         .requestMatchers("/api/alumni/**").permitAll()
+                        .requestMatchers("/api/mentorship/**").permitAll()
                         .requestMatchers("/api/internships/**").permitAll() // TEMP
 
 

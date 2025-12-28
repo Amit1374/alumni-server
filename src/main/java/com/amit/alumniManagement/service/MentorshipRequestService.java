@@ -56,4 +56,31 @@ public class MentorshipRequestService {
         return mentorshipRepository.findByAlumniAndStatus(alumni, Status.PENDING);
     }
 
+    // Get student mentorship request (Show in left sidebar on student dashboard)
+    public List<MentorshipRequest> getRequestForStudent(Long studentId){
+        User student = userRepository.findById(studentId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        List<MentorshipRequest> requests = mentorshipRepository.findByStudent(student);
+
+        return sortRequests(requests);
+    }
+
+    private List<MentorshipRequest> sortRequests(List<MentorshipRequest> requests){
+        // Sort them in Java | sort it using Java's Comparator.
+        // Logic: If one is PENDING and other is NOT, PENDING wins.
+        //        Otherwise, compare Dates (Newest first)
+        requests.sort((r1, r2) ->{ // its return null | inplace sort : that "return separately"
+            boolean isPending1 = r1.getStatus().equals(Status.PENDING);
+            boolean isPending2 = r2.getStatus().equals(Status.PENDING);
+
+            // Priority 1: Status (Pending comes first)
+            if(isPending1 && !isPending2) return -1; // r1 is pending it on top
+            if(!isPending1 && isPending2)  return 1; // r2 is pending it on top
+
+            return r2.getCreatedAt().compareTo(r1.getCreatedAt());
+        });
+
+        return requests;
+    }
 }

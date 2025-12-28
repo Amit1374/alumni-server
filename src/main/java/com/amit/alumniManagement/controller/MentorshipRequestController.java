@@ -3,11 +3,9 @@ package com.amit.alumniManagement.controller;
 import com.amit.alumniManagement.dto.MentorshipRequestDto;
 import com.amit.alumniManagement.service.MentorshipRequestService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @AllArgsConstructor
 @RestController
@@ -31,22 +29,36 @@ public class MentorshipRequestController {
 
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    @GetMapping("/student/{studentId}")
+    public ResponseEntity<?> getStudentRequests(@PathVariable Long studentId){
+        try{
+            return new ResponseEntity<>(
+                    mentorshipRequestService.getRequestForStudent(studentId),
+                    HttpStatus.OK
+            );
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body("Error while getting mentorship request" + e.getMessage());
+        }
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

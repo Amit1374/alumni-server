@@ -19,4 +19,6 @@ public interface MentorshipRepository extends JpaRepository<MentorshipRequest, L
     // For Student Dashboard: "Show me all requests I sent"
     List<MentorshipRequest> findByStudentAndStatus(User student, Status status);
 
+    List<MentorshipRequest> findByStudent(User student);
+
 }
