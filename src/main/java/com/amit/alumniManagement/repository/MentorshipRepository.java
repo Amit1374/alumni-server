@@ -21,4 +21,6 @@ public interface MentorshipRepository extends JpaRepository<MentorshipRequest, L
 
     List<MentorshipRequest> findByStudent(User student);
 
+    List<MentorshipRequest> findByAlumni(User alumni);
+
 }

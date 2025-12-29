@@ -7,6 +7,7 @@ import com.amit.alumniManagement.repository.MentorshipRepository;
 import com.amit.alumniManagement.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -52,8 +53,8 @@ public class MentorshipRequestService {
     public List<MentorshipRequest> getRequestForAlumni(Long alumniId){
         User alumni = userRepository.findById(alumniId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-
-        return mentorshipRepository.findByAlumniAndStatus(alumni, Status.PENDING);
+        List<MentorshipRequest> requests = mentorshipRepository.findByAlumni(alumni);
+        return sortRequests(requests);
     }
 
     // Get student mentorship request (Show in left sidebar on student dashboard)
@@ -82,5 +83,16 @@ public class MentorshipRequestService {
         });
 
         return requests;
+    }
+
+
+    // Method for help alumni to accept/reject req
+    @Transactional
+    public void updateRequestStatus(Long mentorshipRequestId, Status status){
+        MentorshipRequest mentorshipRequest = mentorshipRepository.findById(mentorshipRequestId)
+                .orElseThrow(() -> new RuntimeException("Mentorship request not found"));
+
+        mentorshipRequest.setStatus(status);
+        mentorshipRepository.save(mentorshipRequest);
     }
 }
