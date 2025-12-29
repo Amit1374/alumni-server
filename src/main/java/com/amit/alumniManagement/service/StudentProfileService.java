@@ -31,6 +31,7 @@ public class StudentProfileService {
                     existing.setDepartment(studentProfile.getDepartment());
                     existing.setYear(studentProfile.getYear());
                     existing.setSkills(studentProfile.getSkills());
+                    existing.setInterests(studentProfile.getInterests());
                     return studentProfileRepository.save(existing);
                 })
                 .orElseGet(() -> {

@@ -31,6 +31,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/alumni/**").permitAll()
                         .requestMatchers("/api/mentorship/**").permitAll()
                         .requestMatchers("/api/internships/**").permitAll() // TEMP
+                        .requestMatchers("/api/events/**").permitAll()
 
 
                         .requestMatchers("/api/notifications/**").permitAll()
