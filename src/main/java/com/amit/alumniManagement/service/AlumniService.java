@@ -1,14 +1,17 @@
 package com.amit.alumniManagement.service;
 
+import com.amit.alumniManagement.dto.AlumniProfileRequest;
 import com.amit.alumniManagement.entity.AlumniProfile;
 import com.amit.alumniManagement.entity.User;
 import com.amit.alumniManagement.repository.AlumniProfileRepository;
 import com.amit.alumniManagement.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,24 +22,45 @@ public class AlumniService {
 
     private final AlumniProfileRepository alumniProfileRepository;
 
-    public AlumniProfile saveOrUpdateAlumniProfile(Long userId, AlumniProfile alumniProfile){
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+    private final FileUploadService fileUploadService;
 
-        return alumniProfileRepository.findByUserId(userId)
-                .map(existing -> {
-                    existing.setPassOutYear(alumniProfile.getPassOutYear());
-                    existing.setExpertise(alumniProfile.getExpertise());
-                    existing.setExperienceInYear(alumniProfile.getExperienceInYear());
-                    existing.setCompanyName(alumniProfile.getCompanyName());
-                    existing.setDesignation(alumniProfile.getDesignation());
-                    return alumniProfileRepository.save(existing);
-                })
+    public AlumniProfile saveOrUpdateAlumniProfile(Long userId, AlumniProfileRequest alumniProfileRequest, MultipartFile profileImage) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new  ResponseStatusException(
+                HttpStatus.NOT_FOUND,
+                "User not found"
+        ));
+
+        // improved code
+        AlumniProfile profile = alumniProfileRepository.findByUserId(userId)
                 .orElseGet(() -> {
-                    alumniProfile.setUser(user);
-                    return alumniProfileRepository.save(alumniProfile);
+                    AlumniProfile newAlumniProfile = new AlumniProfile();
+                    newAlumniProfile.setUser(user);
+                    return newAlumniProfile;
                 });
 
+
+        AlumniProfile newAlumniProfile = convertToEntity(alumniProfileRequest);
+
+        // update fields
+        profile.setPassOutYear(newAlumniProfile.getPassOutYear());
+        profile.setExpertise(newAlumniProfile.getExpertise());
+        profile.setExperienceInYear(newAlumniProfile.getExperienceInYear());
+        profile.setCompanyName(newAlumniProfile.getCompanyName());
+        profile.setDesignation(newAlumniProfile.getDesignation());
+
+        if(profileImage != null &&  !profileImage.isEmpty() ) {
+
+            // delete old image from Cloudinary
+            if (profile.getImgUrl() != null) {
+                fileUploadService.deleteFile(profile.getImgUrl());
+            }
+
+            String imgUrl = fileUploadService.uploadFile(profileImage);
+            profile.setImgUrl(imgUrl);
+        }
+
+        return alumniProfileRepository.save(profile);
     }
 
 
@@ -82,6 +106,16 @@ public class AlumniService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
+    private AlumniProfile convertToEntity(AlumniProfileRequest alumniProfileRequest) {
+        return AlumniProfile.builder()
+                .passOutYear(alumniProfileRequest.getPassOutYear())
+                .experienceInYear(alumniProfileRequest.getExperienceInYear())
+                .expertise(alumniProfileRequest.getExpertise())
+                .companyName(alumniProfileRequest.getCompanyName())
+                .designation(alumniProfileRequest.getDesignation())
+                .industry(alumniProfileRequest.getIndustry())
+                .build();
+    }
 
 }
 

@@ -23,7 +23,7 @@ public class AlumniProfile {
     private String companyName;
     private String designation;
     private String industry;
-
+    private String imgUrl;
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
